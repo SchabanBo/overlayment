@@ -18,31 +18,8 @@ class MyApp extends StatelessWidget {
       navigatorKey: key,
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('QOverlay'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: () {
-                OverPanel(
-                    alignment: Alignment.center,
-                    child: OverExpander(
-                        child: const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Test'),
-                        ),
-                        expandChild: Column(
-                          children: const [
-                            Text('data'),
-                            Text('data'),
-                            Text('data'),
-                            Text('data'),
-                            Text('data'),
-                            Text('data'),
-                          ],
-                        ))).show();
-              },
-            ),
-          ],
+          centerTitle: true,
+          title: const Text('Overlayment'),
         ),
         body: const MainScreen(),
         floatingActionButton: FloatingActionButton(
