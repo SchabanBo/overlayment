@@ -1,0 +1,17 @@
+build/*
+coverage/*
+**/.dart_tool/*
+**/.idea/*
+**/windows/*
+.vscode/*
+
+example/build/*
+example/android/*
+example/ios/*
+example/web/*
+example/.metadata
+example/*.iml
+example/.packages
+example/analysis_options.yaml
+example/test/
+example/README.md
