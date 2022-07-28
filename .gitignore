@@ -3,7 +3,9 @@ coverage/*
 **/.dart_tool/*
 **/.idea/*
 **/windows/*
+.packages
 .vscode/*
+**/pubspec.lock
 
 example/build/*
 example/android/*

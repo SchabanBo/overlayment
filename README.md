@@ -4,6 +4,10 @@
 
 [![likes](https://badges.bar/overlayment/likes)](https://pub.dev/packages/overlayment) [![popularity](https://badges.bar/overlayment/popularity)](https://pub.dev/packages/overlayment) [![pub points](https://badges.bar/overlayment/pub%20points)](https://pub.dev/packages/overlayment) [Online Example](https://overlayment.netlify.app)
 
+
+This package will help you to manage the overlays in your projects.
+Show a dialog, notification, window, or a panel easily. or use one of the helping widgets like AutoComplete, Expander(Dropdown).
+
 To start working with overlayment you need to give to it the `NavigationKey` at the application start or you need to give it the context every time you want to create a new overlayment.
 
 ```dart
