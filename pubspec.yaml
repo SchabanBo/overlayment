@@ -1,7 +1,7 @@
 name: overlayment
 description: Show a dialog, notification, window, or a panel easily. use helping widgets like AutoComplete, Expander(Dropdown).
 version: 0.1.0
-homepage:
+repository: https://github.com/SchabanBo/overlayment
 
 environment:
   sdk: ">=2.17.6 <3.0.0"
