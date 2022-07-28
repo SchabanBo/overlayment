@@ -87,6 +87,12 @@ class _OverAutoCompleteState<T extends Object>
         expanded = focusNode.hasFocus;
       });
     });
+    textController.addListener(() {
+      if (expanded) return;
+      setState(() {
+        expanded = true;
+      });
+    });
   }
 
   bool _isValid(T? v) =>
@@ -108,7 +114,9 @@ class _OverAutoCompleteState<T extends Object>
         result: (e) {
           current = e;
           widget.onSelect(e);
-          expanded = false;
+          setState(() {
+            expanded = false;
+          });
         },
       ),
       isClickable: false,

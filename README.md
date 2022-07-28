@@ -1,6 +1,8 @@
 # Overlayment
 
-## [Online Example](https://overlayment.netlify.app)
+![Logo](assets/logo.png)
+
+[![likes](https://badges.bar/overlayment/likes)](https://pub.dev/packages/overlayment) [![popularity](https://badges.bar/overlayment/popularity)](https://pub.dev/packages/overlayment) [![pub points](https://badges.bar/overlayment/pub%20points)](https://pub.dev/packages/overlayment) [Online Example](https://overlayment.netlify.app)
 
 To start working with overlayment you need to give to it the `NavigationKey` at the application start or you need to give it the context every time you want to create a new overlayment.
 

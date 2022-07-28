@@ -103,7 +103,7 @@ class OverExpander<T> extends StatefulWidget {
 
 class _OverExpanderState<T> extends State<OverExpander<T>> {
   final containerKey = GlobalKey();
-
+  late final name = widget.name;
   bool _expanded = false;
 
   @override
@@ -121,7 +121,7 @@ class _OverExpanderState<T> extends State<OverExpander<T>> {
       return;
     }
     if (!widget.expand && _expanded) {
-      Overlayment.dismissName(widget.name);
+      Overlayment.dismissName(name);
       _expanded = false;
     }
   }
@@ -136,7 +136,7 @@ class _OverExpanderState<T> extends State<OverExpander<T>> {
       widget: widget,
       parentPosition: offset,
       parentSize: size,
-      name: widget.name,
+      name: name,
       screenSize: MediaQuery.of(context).size,
     ).show<T>(context: containerKey.currentContext).then((value) {
       if (widget.onSelect != null) {
