@@ -2,7 +2,7 @@
 
 ![Logo](assets/logo.png)
 
-[![likes](https://badges.bar/overlayment/likes)](https://pub.dev/packages/overlayment) [![popularity](https://badges.bar/overlayment/popularity)](https://pub.dev/packages/overlayment) [![pub points](https://badges.bar/overlayment/pub%20points)](https://pub.dev/packages/overlayment) [Online Example](https://overlayment.netlify.app)
+[![likes](https://img.shields.io/pub/likes/overlayment?logo=dart)](https://pub.dev/packages/overlayment) [![popularity](https://img.shields.io/pub/popularity/overlayment?logo=dart)](https://pub.dev/packages/overlayment) [![pub points](https://img.shields.io/pub/points/overlayment?logo=dart)](https://pub.dev/packages/overlayment) [Online Example](https://overlayment.netlify.app)
 
 
 This package will help you to manage the overlays in your projects.
@@ -21,6 +21,19 @@ To start working with overlayment you need to give to it the `NavigationKey` at 
     );
   }
 ```
+
+**Note**: if you are using [qlevar_router](https://github.com/SchabanBo/qlevar_router) you can use the `key` property of the router to set the `NavigationKey`.
+
+```dart
+final router = QRouterDelegate(routes);
+Overlayment.navigationKey = router.key;
+
+return MaterialApp.router(
+  routeInformationParser: const QRouteInformationParser(),
+  routerDelegate: router,
+);
+```
+
 
 To show an overlay you can use `Overlayment.show(OverlayType())` or `OverlayType().show()` .
 To dismiss an overlay you can use:
