@@ -6,6 +6,8 @@ import 'package:overlayment/src/types/animations/over_animation.dart';
 import 'package:overlayment/src/types/overlay_base.dart';
 
 import '../../overlayment.dart';
+import '../helpres/paltform/view_padding_web.dart'
+    if (dart.library.io) '../helpres/paltform/view_padding_io.dart';
 import '../types/animations/overlay_animation.dart';
 import 'filter_widget.dart';
 import 'overlay_widget.dart';
@@ -209,8 +211,7 @@ class _QExpander with OverlayBase {
                 overlay: this,
                 height: () => null,
                 width: () => widget.fitParentWidth ? parentSize.width : null,
-                position: (s, _) =>
-                    _calcPosition(MediaQuery.of(context).size, s),
+                position: (s, _) => _calcPosition(context, s),
               ))
     ];
   }
@@ -234,10 +235,19 @@ class _QExpander with OverlayBase {
   Future<T?> show<T>({BuildContext? context}) =>
       Overlayment.show(this, context: context);
 
-  Offset _calcPosition(Size screen, Size? size) {
+  Offset _calcPosition(BuildContext context, Size? size) {
+    final screen = MediaQuery.of(context).size;
     if (widget.globalAlignment != null) {
       return _getGlobalPosition(screen, size);
     }
+
+    var screenPadding = MediaQuery.of(context).viewPadding;
+    size = size ?? const Size(0, 0);
+
+    // If there is no padding, it could be that there is a safe area widget,
+    // which removed the view padding from the context
+    // so we need to get it again
+    if (screenPadding == EdgeInsets.zero) screenPadding = windowsPadding;
 
     final alignment = widget.globalAlignment ?? widget.alignment;
     final position = alignment.withinRect(Rect.fromLTRB(
@@ -247,10 +257,13 @@ class _QExpander with OverlayBase {
       parentPosition.dy + parentSize.height,
     ));
 
-    size = size ?? const Size(0, 0);
-    final x = position.dx + (size.width * 0.5 * alignment.x - size.width * 0.5);
-    final y =
-        position.dy + (size.height * 0.5 * alignment.y - size.height * 0.5);
+    final x = position.dx +
+        (size.width * 0.5 * alignment.x - size.width * 0.5) -
+        screenPadding.left;
+
+    final y = position.dy +
+        (size.height * 0.5 * alignment.y - size.height * 0.5) -
+        screenPadding.top;
 
     final maxXPoint = screen.width - size.width * alignment.x;
     final maxYPoint = screen.height - size.height * alignment.x;

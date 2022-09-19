@@ -11,6 +11,7 @@ example/build/*
 example/android/*
 example/ios/*
 example/web/*
+web/*
 example/.metadata
 example/*.iml
 example/.packages
