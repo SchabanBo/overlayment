@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [0.1.2] 19-09-2022
+
+- Fix Expander location when there is safe area in the widget tree.
+
 ## [0.1.1] 10-08-2022
 
 - Fix readme

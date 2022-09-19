@@ -51,7 +51,7 @@ class OverAutoComplete<T extends Object> extends StatefulWidget {
   final Widget loadingWidget;
 
   /// A callback called when the user selects a suggestion.
-  final Function(T) onSelect;
+  final void Function(T) onSelect;
 
   /// A callback to build the suggestion widget.
   final Widget Function(T) suggestionsBuilder;
@@ -77,7 +77,7 @@ class _OverAutoCompleteState<T extends Object>
   @override
   void initState() {
     super.initState();
-    if (_isValid(widget.initialValue as T)) {
+    if (_isValid(widget.initialValue)) {
       final filter = widget.querySelector ?? _defaultQuery;
       textController.text = filter(widget.initialValue as T);
       current = widget.initialValue;
@@ -145,7 +145,7 @@ class _Suggestions<T> extends StatefulWidget {
   final Future<List<T>> Function(String) loadSuggestions;
   final Widget loadingWidget;
   final String Function(T) querySelector;
-  final Function(T) result;
+  final void Function(T) result;
   final Widget Function(T) suggestionsBuilder;
   final bool Function(T) validator;
 
