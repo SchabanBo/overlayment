@@ -23,7 +23,7 @@ class OverlaysController {
 
   Future<T?> _dismiss<T>(_OverlayRequest request, {T? result}) async {
     if (await request.cleanup(result: result)) {
-      _requests.remove(request);
+      if (_requests.contains(request)) _requests.remove(request);
     }
 
     return (await request.completer.future) as T?;
@@ -68,6 +68,7 @@ class _OverlayRequest<T> {
 
   Future<bool> cleanup({T? result}) async {
     if (!mounted) {
+      completer.complete(result);
       return true;
     }
     mounted = false;
