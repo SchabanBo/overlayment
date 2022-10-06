@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:overlayment/overlayment.dart';
+import 'package:overlayment/src/controllers/notification_controller.dart';
 
 import '../types/overlay_base.dart';
 
@@ -30,12 +32,11 @@ class OverlaysController {
   }
 
   Future<T?> dismiss<T>(OverlayBase overlay, {T? result}) =>
-      _dismiss<T>(_requests.firstWhere((element) => element.overlay == overlay),
-          result: result);
+      _findAndDismiss((element) => element.overlay == overlay, result: result);
 
-  Future<T?> dismissName<T>(String name, {T? result}) => _dismiss<T>(
-      _requests.firstWhere((element) => element.overlay.name == name),
-      result: result);
+  Future<T?> dismissName<T>(String name, {T? result}) =>
+      _findAndDismiss((element) => element.overlay.name == name,
+          result: result);
 
   Future<T?> dismissLast<T>({T? result}) =>
       _dismiss<T>(_requests.last, result: result);
@@ -48,6 +49,16 @@ class OverlaysController {
         await _dismiss(item, result: result);
       }
     }
+  }
+
+  Future<T?> _findAndDismiss<T>(
+    bool Function(_OverlayRequest<dynamic>) query, {
+    T? result,
+  }) {
+    if (_requests.any(query)) {
+      return _dismiss(_requests.firstWhere(query), result: result);
+    }
+    return Future.value(null);
   }
 }
 
@@ -68,7 +79,7 @@ class _OverlayRequest<T> {
 
   Future<bool> cleanup({T? result}) async {
     if (!mounted) {
-      completer.complete(result);
+      if (!completer.isCompleted) completer.complete(result);
       return true;
     }
     mounted = false;
@@ -81,6 +92,9 @@ class _OverlayRequest<T> {
       }
     }
     await overlay.overlayAnimation.reverse();
+    if (overlay is OverNotification) {
+      NotificationController.instance.cleanup(overlay.name);
+    }
     if (overlay.actions.onClose != null) {
       result = await overlay.actions.onClose!(result);
     }
@@ -90,7 +104,7 @@ class _OverlayRequest<T> {
     }
     _overlayEntries.clear();
     overlay.overlayAnimation.dispose();
-    completer.complete(result);
+    if (!completer.isCompleted) completer.complete(result);
     return true;
   }
 }

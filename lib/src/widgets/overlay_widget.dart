@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:overlayment/overlayment.dart';
+import 'package:overlayment/src/controllers/notification_controller.dart';
 
 import '../types/animations/overlay_animation.dart';
 import '../types/overlay_base.dart';
@@ -67,8 +69,37 @@ class _OverlayWidgetState extends State<OverlayWidget>
   @override
   Widget build(BuildContext context) {
     _updateSize();
-    var result = child;
+    var result = widget.overlay.child;
 
+    // add basis decorations
+    result = Material(
+      key: containerKey,
+      color: Colors.transparent,
+      child: Container(
+        margin: widget.overlay.margin,
+        decoration: widget.overlay.decoration ??
+            BoxDecoration(
+              color: widget.overlay.color ??
+                  Theme.of(context).scaffoldBackgroundColor,
+              borderRadius: BorderRadius.circular(4),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                )
+              ],
+            ),
+        child: result,
+      ),
+    );
+
+    if (widget.overlay.addInsetsPaddings) {
+      result = Padding(
+        padding: MediaQuery.of(context).viewInsets,
+        child: result,
+      );
+    }
     // if widget can be moved then add GestureDetector to update position
     if (widget.canMoved) {
       result = GestureDetector(
@@ -97,12 +128,20 @@ class _OverlayWidgetState extends State<OverlayWidget>
       );
     } else {
       // else calc and add position
-      final widgetPosition = widget.position(_size, _movingPosition);
+      var widgetPosition = widget.position(_size, _movingPosition);
+      if (widget.overlay is OverNotification && _size != null) {
+        widgetPosition = NotificationController.instance.fixPosition(
+          widget.overlay.name,
+          widgetPosition,
+          _size!,
+          context,
+        );
+      }
       result = Positioned(
         left: widgetPosition.dx,
         top: widgetPosition.dy,
-        width: width,
-        height: height,
+        width: _getWidth(widgetPosition),
+        height: _getHeight(widgetPosition),
         child: result,
       );
     }
@@ -111,43 +150,45 @@ class _OverlayWidgetState extends State<OverlayWidget>
     return result;
   }
 
+  /// correct width if the widget will be outside of the screen
+  double? _getWidth(Offset position) {
+    final w = widget.width();
+    // nothing to correct
+    if (_size == null || _size!.width == 0) return w;
+
+    final screenWidth = MediaQuery.of(context).size.width;
+    final currentWidth = w ?? _size!.width;
+
+    if (position.dx + currentWidth > screenWidth) {
+      return screenWidth - position.dx;
+    }
+    return currentWidth;
+  }
+
+  /// correct height if the widget will be outside of the screen
+  double? _getHeight(Offset position) {
+    final h = widget.height();
+    // nothing to correct
+    if (_size == null || _size!.height == 0) return h;
+
+    final screenHeight = MediaQuery.of(context).size.height;
+    final currentHeight = h ?? _size!.height;
+
+    if (position.dy + currentHeight > screenHeight) {
+      return screenHeight - position.dy;
+    }
+    return currentHeight;
+  }
+
   double? get width {
     final w = widget.width();
-    if (w == null || _size == null) {
-      return w;
-    }
+    if (w == null || _size == null) return w;
     return max(w, _size!.width);
   }
 
   double? get height {
     final h = widget.height();
-    if (h == null || _size == null) {
-      return h;
-    }
+    if (h == null || _size == null) return h;
     return max(h, _size!.height);
   }
-
-  Widget get child => SafeArea(
-        child: Material(
-          color: Colors.transparent,
-          key: containerKey,
-          child: Container(
-            margin: widget.overlay.margin,
-            decoration: widget.overlay.decoration ??
-                BoxDecoration(
-                  color: widget.overlay.color ??
-                      Theme.of(context).scaffoldBackgroundColor,
-                  borderRadius: BorderRadius.circular(4),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    )
-                  ],
-                ),
-            child: widget.overlay.child,
-          ),
-        ),
-      );
 }

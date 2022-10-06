@@ -28,11 +28,14 @@ class OverExpander<T> extends StatefulWidget {
     this.color,
     this.margin,
     this.onSelect,
+    this.width,
+    this.height,
     this.duration,
     this.animation,
     this.decoration,
     this.globalAlignment,
     this.expand = false,
+    this.addInsetsPaddings = false,
     this.isClickable = true,
     this.offset = Offset.zero,
     this.fitParentWidth = true,
@@ -49,6 +52,9 @@ class OverExpander<T> extends StatefulWidget {
 
   /// {@macro overlay_base.actions}
   final OverlayActions actions;
+
+  /// {@macro overlay_base.addInsetsPaddings}
+  final bool addInsetsPaddings;
 
   /// The alignment of the overlay relative to the parent.
   /// default is the center
@@ -86,6 +92,9 @@ class OverExpander<T> extends StatefulWidget {
   /// if this alignment is set the [alignment] will be ignored
   final Alignment? globalAlignment;
 
+  /// The expander width, if null, the expander will try to fit the content
+  final double? height;
+
   /// can user click on the child to show the overlay
   /// if false then the expander should be expanded with [expand] set to true
   final bool isClickable;
@@ -99,6 +108,9 @@ class OverExpander<T> extends StatefulWidget {
   /// The overlay offset relative to the child
   final Offset offset;
 
+  /// The expander width, if null, the expander will try to fit the content
+  final double? width;
+
   @override
   State<OverExpander<T>> createState() => _OverExpanderState<T>();
 }
@@ -106,6 +118,7 @@ class OverExpander<T> extends StatefulWidget {
 class _OverExpanderState<T> extends State<OverExpander<T>> {
   final containerKey = GlobalKey();
   late final name = widget.name;
+
   bool _expanded = false;
 
   @override
@@ -129,17 +142,10 @@ class _OverExpanderState<T> extends State<OverExpander<T>> {
   }
 
   void _onTap() {
-    final renderBox =
-        containerKey.currentContext!.findRenderObject() as RenderBox;
-    final offset = renderBox.localToGlobal(Offset.zero,
-        ancestor: Navigator.of(context).context.findRenderObject());
-    final size = renderBox.size;
     _QExpander(
       widget: widget,
-      parentPosition: offset,
-      parentSize: size,
+      parentKey: containerKey,
       name: name,
-      screenSize: MediaQuery.of(context).size,
     ).show<T>(context: containerKey.currentContext).then((value) {
       if (widget.onSelect != null) {
         widget.onSelect!(value);
@@ -165,15 +171,11 @@ class _OverExpanderState<T> extends State<OverExpander<T>> {
 class _QExpander with OverlayBase {
   _QExpander({
     required this.widget,
-    required this.parentSize,
-    required this.parentPosition,
-    required this.screenSize,
+    required this.parentKey,
     required this.name,
   });
 
-  final Offset parentPosition;
-  final Size parentSize;
-  final Size screenSize;
+  final GlobalKey parentKey;
   final OverExpander widget;
 
   @override
@@ -187,6 +189,9 @@ class _QExpander with OverlayBase {
 
   @override
   OverlayActions get actions => widget.actions;
+
+  @override
+  bool get addInsetsPaddings => widget.addInsetsPaddings;
 
   @override
   List<OverlayEntry> buildEntries() {
@@ -209,15 +214,23 @@ class _QExpander with OverlayBase {
       OverlayEntry(
           builder: (context) => OverlayWidget(
                 overlay: this,
-                height: () => null,
-                width: () => widget.fitParentWidth ? parentSize.width : null,
+                height: () => widget.height,
+                width: _getWidth,
                 position: (s, _) => _calcPosition(context, s),
               ))
     ];
   }
 
   @override
-  Widget get child => widget.expandChild;
+  Widget get child => widget.globalAlignment == null
+      ? widget.expandChild
+      : SafeArea(
+          top: widget.globalAlignment!.y == -1,
+          bottom: widget.globalAlignment!.y == 1,
+          left: widget.globalAlignment!.x < 1,
+          right: widget.globalAlignment!.x > -1,
+          child: widget.expandChild,
+        );
 
   @override
   Color? get color => widget.color;
@@ -235,6 +248,15 @@ class _QExpander with OverlayBase {
   Future<T?> show<T>({BuildContext? context}) =>
       Overlayment.show(this, context: context);
 
+  double? _getWidth() {
+    if (!widget.fitParentWidth || parentKey.currentContext == null) {
+      return widget.width;
+    }
+    return (parentKey.currentContext!.findRenderObject() as RenderBox)
+        .size
+        .width;
+  }
+
   Offset _calcPosition(BuildContext context, Size? size) {
     final screen = MediaQuery.of(context).size;
     if (widget.globalAlignment != null) {
@@ -249,6 +271,15 @@ class _QExpander with OverlayBase {
     // so we need to get it again
     if (screenPadding == EdgeInsets.zero) screenPadding = windowsPadding;
 
+    if (parentKey.currentContext == null) return Offset.zero;
+
+    final renderBox = parentKey.currentContext!.findRenderObject() as RenderBox;
+    final parentPosition = renderBox.localToGlobal(
+      Offset.zero,
+      ancestor: Navigator.of(context).context.findRenderObject(),
+    );
+    final parentSize = renderBox.size;
+
     final alignment = widget.globalAlignment ?? widget.alignment;
     final position = alignment.withinRect(Rect.fromLTRB(
       parentPosition.dx,
@@ -257,13 +288,10 @@ class _QExpander with OverlayBase {
       parentPosition.dy + parentSize.height,
     ));
 
-    final x = position.dx +
-        (size.width * 0.5 * alignment.x - size.width * 0.5) -
-        screenPadding.left;
+    final x = position.dx + (size.width * 0.5 * alignment.x - size.width * 0.5);
 
-    final y = position.dy +
-        (size.height * 0.5 * alignment.y - size.height * 0.5) -
-        screenPadding.top;
+    final y =
+        position.dy + (size.height * 0.5 * alignment.y - size.height * 0.5);
 
     final maxXPoint = screen.width - size.width * alignment.x;
     final maxYPoint = screen.height - size.height * alignment.x;

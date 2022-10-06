@@ -27,6 +27,7 @@ class OverNotification with OverlayBase {
     this.color,
     this.margin = const EdgeInsets.all(8.0),
     this.decoration,
+    this.addInsetsPaddings = false,
     String? name,
   }) : name = name ?? 'Notification${child.hashCode}' {
     this.animation = animation ?? OverSlideAnimation(begin: getBegin());
@@ -51,8 +52,8 @@ class OverNotification with OverlayBase {
     Color? color,
     String? name,
   }) {
-    name = name ?? 'Notification${title.hashCode}';
     Widget child = Text(title, style: titleStyle);
+    name = name ?? 'Notification${child.hashCode}';
     if (withCloseButton) {
       child = Row(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -120,6 +121,10 @@ class OverNotification with OverlayBase {
   /// {@macro overlay_base.actions}
   @override
   final OverlayActions actions;
+
+  /// {@macro overlay_base.addInsetsPaddings}
+  @override
+  final bool addInsetsPaddings;
 
   /// {@macro overlay_base.animation}
   @override
