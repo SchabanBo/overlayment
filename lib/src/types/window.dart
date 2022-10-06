@@ -27,6 +27,7 @@ class OverWindow with OverlayBase {
     this.animation = const OverFadeAnimation(child: OverScaleAnimation()),
     this.decoration,
     this.canMove = false,
+    this.addInsetsPaddings = true,
     this.duration,
     String? name,
     Key? key,
@@ -98,6 +99,10 @@ class OverWindow with OverlayBase {
   /// {@macro overlay_base.actions}
   @override
   final OverlayActions actions;
+
+  /// {@macro overlay_base.addInsetsPaddings}
+  @override
+  final bool addInsetsPaddings;
 
   /// {@macro overlay_base.animation}
   @override

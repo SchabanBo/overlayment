@@ -19,7 +19,7 @@ import 'animations/overlay_animation.dart';
 ///)
 class OverPanel with OverlayBase {
   OverPanel({
-    required this.child,
+    required Widget child,
     this.alignment = Alignment.bottomCenter,
     this.offset = Offset.zero,
     this.actions = const OverlayActions(),
@@ -30,12 +30,16 @@ class OverPanel with OverlayBase {
     this.backgroundSettings = const BackgroundSettings(),
     this.width,
     this.duration,
+    this.addInsetsPaddings = true,
     this.color,
     String? name,
     Key? key,
-  }) : name = name ?? 'Panel${child.hashCode}' {
+  })  : name = name ?? 'Panel${child.hashCode}',
+        _child = child {
     this.animation = animation ?? OverSlideAnimation(begin: getBegin());
   }
+
+  final Widget _child;
 
   /// The Position where the panel should displayed
   final Alignment alignment;
@@ -57,13 +61,23 @@ class OverPanel with OverlayBase {
   @override
   final OverlayActions actions;
 
+  /// {@macro overlay_base.addInsetsPaddings}
+  @override
+  final bool addInsetsPaddings;
+
   /// {@macro overlay_base.animation}
   @override
   late final OverAnimation animation;
 
-  /// The content of your Panel
   @override
-  final Widget child;
+  Widget get child => SafeArea(
+        top: alignment.y == -1 || (alignment.y == 0 && alignment.x != 0),
+        bottom: alignment.y == 1 || (alignment.y == 0 && alignment.x != 0),
+        left: alignment.x < 1,
+        right: alignment.x > -1,
+        maintainBottomViewPadding: true,
+        child: _child,
+      );
 
   /// {@macro overlay_base.color}
   @override

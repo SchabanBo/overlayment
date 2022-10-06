@@ -22,6 +22,7 @@ class OverDialog with OverlayBase {
     this.backgroundSettings = const BackgroundSettings(blur: 1),
     this.width,
     this.duration,
+    this.addInsetsPaddings = false,
     this.color,
     String? name,
     Key? key,
@@ -46,6 +47,10 @@ class OverDialog with OverlayBase {
   /// {@macro overlay_base.actions}
   @override
   final OverlayActions actions;
+
+  /// {@macro overlay_base.addInsetsPaddings}
+  @override
+  final bool addInsetsPaddings;
 
   /// {@macro overlay_base.animation}
   @override

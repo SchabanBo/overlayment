@@ -25,6 +25,7 @@ class OverAutoComplete<T extends Object> extends StatefulWidget {
     required this.suggestionsBuilder,
     this.inputDecoration,
     this.validator,
+    this.overlayHeight = 100,
     this.initialValue,
     Key? key,
     this.loadingWidget = const Padding(
@@ -49,6 +50,9 @@ class OverAutoComplete<T extends Object> extends StatefulWidget {
 
   /// The widget to display when the suggestions are loading.
   final Widget loadingWidget;
+
+  /// The height of the suggestions overlay
+  final double overlayHeight;
 
   /// A callback called when the user selects a suggestion.
   final void Function(T) onSelect;
@@ -104,20 +108,23 @@ class _OverAutoCompleteState<T extends Object>
       expand: expanded,
       alignment: Alignment.bottomCenter,
       backgroundSettings: BackgroundSettings.transparent(false),
-      expandChild: _Suggestions<T>(
-        controller: textController,
-        validator: _isValid,
-        querySelector: widget.querySelector ?? _defaultQuery,
-        loadSuggestions: widget.loadSuggestions,
-        suggestionsBuilder: widget.suggestionsBuilder,
-        loadingWidget: widget.loadingWidget,
-        result: (e) {
-          current = e;
-          widget.onSelect(e);
-          setState(() {
-            expanded = false;
-          });
-        },
+      expandChild: SizedBox(
+        height: widget.overlayHeight,
+        child: _Suggestions<T>(
+          controller: textController,
+          validator: _isValid,
+          querySelector: widget.querySelector ?? _defaultQuery,
+          loadSuggestions: widget.loadSuggestions,
+          suggestionsBuilder: widget.suggestionsBuilder,
+          loadingWidget: widget.loadingWidget,
+          result: (e) {
+            current = e;
+            widget.onSelect(e);
+            setState(() {
+              expanded = false;
+            });
+          },
+        ),
       ),
       isClickable: false,
       child: TextField(
@@ -168,6 +175,7 @@ class _SuggestionsState<T> extends State<_Suggestions<T>> {
   void initState() {
     super.initState();
     widget.controller.addListener(listen);
+    listen();
   }
 
   void listen() {
@@ -204,7 +212,7 @@ class _SuggestionsState<T> extends State<_Suggestions<T>> {
     }
 
     return ListView(
-      shrinkWrap: true,
+      padding: EdgeInsets.zero,
       children: suggestions
           .map(
             (e) => InkWell(

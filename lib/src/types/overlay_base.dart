@@ -52,6 +52,13 @@ mixin OverlayBase {
   /// {@endtemplate}
   Duration? get duration;
 
+  /// {@template overlay_base.addInsetsPaddings}
+  /// This will defines if the overlay should have the insets padding of the device
+  /// This is used for example to move the overly if the keyboard is opened
+  /// This is true as default for OverPanels and Expanders and false for the rest
+  /// {@endtemplate}
+  bool get addInsetsPaddings;
+
   List<OverlayEntry> buildEntries();
 
   /// show this overlay

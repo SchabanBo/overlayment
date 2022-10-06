@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## [0.2.0] 06.10.2022
+
+- Fix Expander location when keyboard is open.
+- Fix #4
+- Fix safe area error with overPanel
+- Add #5
+
 ## [0.1.2] 19-09-2022
 
 - Fix Expander location when there is safe area in the widget tree.

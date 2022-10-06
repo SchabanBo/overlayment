@@ -58,13 +58,16 @@ class _ExpanderSectionState extends State<_ExpanderSection> {
                 });
               }
             },
+            height: 300,
             expandChild: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Column(
+              child: ListView(
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
                 children: List.generate(
                   10,
                   (index) => Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(4.0),
                     child: ElevatedButton(
                       onPressed: () {
                         Overlayment.dismissName<int>(_name, result: index);
