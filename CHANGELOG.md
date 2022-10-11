@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## [0.2.1] 11.10.2022
+
+- Fix error when showing overlay when widget is building
+- Add notifications test
+
 ## [0.2.0] 06.10.2022
 
 - Fix Expander location when keyboard is open.
