@@ -14,7 +14,9 @@ class OverlaysController {
   Future<T?> add<T>(OverlayState overlayState, OverlayBase overlay) async {
     final request = _OverlayRequest<T>(overlay);
     _requests.add(request);
-    overlayState.insertAll(request.overlayEntries());
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      overlayState.insertAll(request.overlayEntries());
+    });
     if (overlay.duration != null) {
       request.timer = Timer(overlay.duration!, () {
         _dismiss(request);

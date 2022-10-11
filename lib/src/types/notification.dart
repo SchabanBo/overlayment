@@ -61,6 +61,7 @@ class OverNotification with OverlayBase {
           child,
           IconButton(
             icon: const Icon(Icons.close),
+            tooltip: 'Close',
             onPressed: () => Overlayment.dismissName(name!),
           ),
         ],
